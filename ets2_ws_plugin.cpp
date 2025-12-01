@@ -39,6 +39,9 @@ float fuel  = 0;
 float posX = 0;
 float posY = 0;
 float posZ = 0;
+std::string truck_model;
+std::string truck_brand;
+std::string truck_name;
 
 scs_result onTelemetry(const scs_event_t event, const void* eventInfo, const scs_context_t context) {
     const scs_telemetry_data_t* data = (const scs_telemetry_data_t*)eventInfo;
@@ -64,6 +67,21 @@ scs_result onTelemetry(const scs_event_t event, const void* eventInfo, const scs
             posZ = p[2];
         }
         break;
+        #ifdef SCS_TELEMETRY_TRUCK_CHANNEL_model
+        case SCS_TELEMETRY_TRUCK_CHANNEL_model:
+            if (attr.value) truck_model = std::string((const char*)attr.value);
+            break;
+        #endif
+        #ifdef SCS_TELEMETRY_TRUCK_CHANNEL_brand
+        case SCS_TELEMETRY_TRUCK_CHANNEL_brand:
+            if (attr.value) truck_brand = std::string((const char*)attr.value);
+            break;
+        #endif
+        #ifdef SCS_TELEMETRY_TRUCK_CHANNEL_name
+        case SCS_TELEMETRY_TRUCK_CHANNEL_name:
+            if (attr.value) truck_name = std::string((const char*)attr.value);
+            break;
+        #endif
         }
     }
 
@@ -75,6 +93,9 @@ scs_result onTelemetry(const scs_event_t event, const void* eventInfo, const scs
         "\"x\":" + std::to_string(posX) + ","
         "\"y\":" + std::to_string(posY) + ","
         "\"z\":" + std::to_string(posZ) +
+        ",\"truck_model\":\"" + truck_model + "\"," \
+        "\"truck_brand\":\"" + truck_brand + "\"," \
+        "\"truck_name\":\"" + truck_name + "\"" \
         "}";
 
     sendData(json + "\n");
